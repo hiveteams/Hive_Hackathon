@@ -4,6 +4,7 @@ import { MapView } from "expo";
 import { Platform, Text, View, StyleSheet } from "react-native";
 import { Constants, Location, Permissions } from "expo";
 import { Button } from "./Button";
+import { Realtime } from "../realtime";
 
 const initialCoords = {
   latitude: 40.78476453140115,
@@ -62,6 +63,8 @@ class PhotoMapView extends React.PureComponent {
       currentLocation: coords,
       mapMarkerLocation: coords
     }));
+
+    Realtime.updateUserLocation(coords);
   };
 
   onMapPress(e) {
