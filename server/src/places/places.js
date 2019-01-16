@@ -24,7 +24,6 @@ const updatePlaceName = async ({ userId, socket }, { name, placeId }) => {
     { new: true }
   ).exec();
 
-  console.log(place);
   socket.broadcast.emit("placeUpdate", { place });
   socket.emit("placeUpdate", { place });
   return place;
