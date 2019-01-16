@@ -1,1 +1,1 @@
-export { default as Realtime } from "./realtime";
+export { default as Realtime, withRealtime } from "./realtime";

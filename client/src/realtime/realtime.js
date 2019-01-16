@@ -1,10 +1,47 @@
+import React from "react";
 import SocketIOClient from "socket.io-client";
 
-let _socket = null;
+const usersCache = {};
+const placesCache = {};
+const realtimeComponents = {};
+
+export function withRealtime(WrappedComponent, id) {
+  return class extends React.Component {
+    constructor(props) {
+      super(props);
+    }
+
+    componentDidMount() {
+      // keep a ref to this realtime compnent
+      realtimeComponents[id] = this;
+    }
+
+    componentWillUnmount() {
+      delete realtimeComponents[id];
+    }
+
+    render() {
+      return (
+        <WrappedComponent
+          users={Object.values(usersCache)}
+          places={Object.values(placesCache)}
+          {...this.props}
+        />
+      );
+    }
+  };
+}
+
+let connection = {
+  username: null,
+  userId: null,
+  socket: null
+};
+
 class Realtime {
-  static init(url, onReady = () => {}) {
+  static init({ url, username }, onReady = () => {}) {
     // warn for duplicate socket initialization
-    if (_socket) {
+    if (connection.socket) {
       console.warn(
         "Realtime socket already initialized, duplicate initialization ignored"
       );
@@ -12,40 +49,65 @@ class Realtime {
     }
 
     // create new socket io client
-    _socket = SocketIOClient("http://localhost:3000");
+    const socket = SocketIOClient(url);
+    connection.username = username;
+    connection.socket = socket;
 
     // listen for socket readiness
-    _socket.on("connect", onReady);
+    socket.on("connect", () => {
+      socket.emit("login", username);
+    });
 
-    // listen for socket messages
-    _socket.on("message", msg => console.log(msg));
+    socket.on("login", ({ userId, users, places }) => {
+      users.forEach(u => (usersCache[u._id] = u));
+      places.forEach(p => (placesCache[p._id] = p));
+      // set connection userId
+      connection.userId = userId;
+      // trigger onReady callback
+      onReady();
+    });
+
+    // listen for userUpdates
+    socket.on("userUpdate", ({ user }) => {
+      // update users cache
+      usersCache[user._id] = user;
+
+      const components = Object.values(realtimeComponents);
+      components.forEach(c => c.forceUpdate());
+    });
+
+    // listen for place updates
   }
 
   static checkForInitialization() {
-    if (!_socket) {
+    if (!connection.socket) {
       throw new Error(
         "Realtime socket not initialized, please call Realtime.init before using socket"
       );
-    } else if (!_socket.id) {
+    } else if (!connection.userId) {
       throw new Error(
         "Realtime socket not ready, please wait for onReady callback before using socket"
       );
     }
   }
 
-  static sendMessage(data) {
-    _socket.send(JSON.stringify(data));
+  static sendMessage(method, data) {
+    const msg = {
+      userId: connection.userId,
+      method,
+      data
+    };
+    connection.socket.send(JSON.stringify(msg));
   }
 
-  static updateUserLocation(location) {
+  static updateCoords(coords) {
     Realtime.checkForInitialization();
 
     const data = {
-      msg: "location",
-      location
+      coords
     };
 
-    Realtime.sendMessage(data);
+    Realtime.sendMessage("updateCoords", data);
   }
 }
 

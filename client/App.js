@@ -2,20 +2,43 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import PhotoMapView from "./src/components/PhotoMapView";
 import { Realtime } from "./src/realtime";
+import { Login } from "./src/components/Login";
+import { SecureStore } from "expo";
 
 export default class App extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      ready: false
+      ready: false,
+      loggedIn: false
     };
+
+    this._initialize = this._initialize.bind(this);
+    this.handleLogin = this.handleLogin.bind(this);
   }
 
   componentWillMount() {
-    Realtime.init("http://localhost:3000", () =>
-      this.setState({ ready: true })
-    );
+    this._initialize();
+  }
+
+  async _initialize() {
+    const username = await SecureStore.getItemAsync("username");
+
+    if (username) {
+      Realtime.init({ url: "http://dev2.hive.com", username }, () =>
+        this.setState({ ready: true, loggedIn: true })
+      );
+    } else {
+      this.setState({ ready: true, loggedIn: false });
+    }
+  }
+
+  handleLogin(username) {
+    Realtime.init({ url: "http://dev2.hive.com", username }, () => {
+      SecureStore.setItemAsync("username", username);
+      this.setState({ ready: true, loggedIn: true });
+    });
   }
 
   render() {
@@ -28,6 +51,11 @@ export default class App extends React.Component {
         </View>
       );
     }
+
+    if (!this.state.loggedIn) {
+      return <Login onLogin={this.handleLogin} />;
+    }
+
     return <PhotoMapView />;
   }
 }

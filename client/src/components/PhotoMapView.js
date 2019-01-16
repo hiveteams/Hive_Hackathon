@@ -4,7 +4,7 @@ import { MapView } from "expo";
 import { Platform, Text, View, StyleSheet } from "react-native";
 import { Constants, Location, Permissions } from "expo";
 import { Button } from "./Button";
-import { Realtime } from "../realtime";
+import { Realtime, withRealtime } from "../realtime";
 
 const initialCoords = {
   latitude: 40.78476453140115,
@@ -64,11 +64,12 @@ class PhotoMapView extends React.PureComponent {
       mapMarkerLocation: coords
     }));
 
-    Realtime.updateUserLocation(coords);
+    Realtime.updateCoords(coords);
   };
 
   onMapPress(e) {
     const coords = e.nativeEvent.coordinate;
+    Realtime.updateCoords(coords);
     this.setState({
       mapMarkerLocation: coords
     });
@@ -92,6 +93,14 @@ class PhotoMapView extends React.PureComponent {
               pinColor="#4990E2"
             />
           )}
+          {this.props.users.map(u => (
+            <MapView.Marker
+              key={u._id}
+              coordinate={u.coords}
+              title={u.username}
+              pinColor="#fff"
+            />
+          ))}
         </MapView>
         <View
           style={{
@@ -115,4 +124,4 @@ PhotoMapView.propTypes = {};
 
 PhotoMapView.defaultProps = {};
 
-export default PhotoMapView;
+export default withRealtime(PhotoMapView, "photoView");
