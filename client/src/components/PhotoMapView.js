@@ -2,9 +2,11 @@ import React from "react";
 import PropTypes from "prop-types";
 import { MapView } from "expo";
 import { Platform, Text, View, StyleSheet } from "react-native";
-import { Constants, Location, Permissions } from "expo";
+import { Constants, Location, Permissions, ImagePicker } from "expo";
 import { Button } from "./Button";
 import { Realtime, withRealtime } from "../realtime";
+import { colors } from "../helpers/style-helpers";
+import PlaceOverlay from "./PlaceOverlay/PlaceOverlay";
 
 const initialCoords = {
   latitude: 40.78476453140115,
@@ -21,10 +23,12 @@ class PhotoMapView extends React.PureComponent {
       location: null,
       error: null,
       mapMarkerLocation: null,
-      currentLocation: null
+      currentLocation: null,
+      selectedPlaceId: null
     };
 
     this.onMapPress = this.onMapPress.bind(this);
+    this.onUploadPhotoPress = this.onUploadPhotoPress.bind(this);
   }
 
   componentWillMount() {
@@ -75,7 +79,37 @@ class PhotoMapView extends React.PureComponent {
     });
   }
 
+  async onUploadPhotoPress() {
+    let { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    if (status !== "granted") {
+      this.setState({
+        errorMessage: "Permission to access camera roll was denied"
+      });
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync();
+    if (result.cancelled) return;
+
+    const place = await Realtime.createNewPlace(
+      result,
+      this.state.mapMarkerLocation
+    );
+    this.setState({ selectedPlaceId: place._id, mapMarkerLocation: null });
+  }
+
   render() {
+    let messages = [];
+    let selectedPlace = null;
+
+    if (this.state.selectedPlaceId) {
+      messages = this.props.messages
+        .filter(m => m.placeId === this.state.selectedPlaceId)
+        .sort((a, b) => a.createdAt - b.createdAt);
+      selectedPlace = this.props.places.find(
+        p => p._id === this.state.selectedPlaceId
+      );
+    }
+
     return (
       <>
         <MapView
@@ -85,22 +119,68 @@ class PhotoMapView extends React.PureComponent {
           onPress={this.onMapPress}
           onPoiClick={this.onMapPress}
         >
+          {this.props.users.map(u => (
+            <MapView.Marker
+              key={u._id}
+              coordinate={u.coords}
+              title={u.username}
+              pinColor={colors.accent}
+              onPress={e => {
+                console.log("user pressed");
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+            >
+              <View
+                style={{
+                  width: 20,
+                  height: 20,
+                  backgroundColor: colors.accentDark,
+                  borderRadius: 20,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center"
+                }}
+              />
+            </MapView.Marker>
+          ))}
+          {this.props.places.map(p => (
+            <MapView.Marker
+              key={p._id}
+              coordinate={p.coords}
+              pinColor={colors.black}
+              title=""
+              onPress={e => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.setState({ selectedPlaceId: p._id });
+              }}
+            />
+          ))}
           {this.state.mapMarkerLocation && (
             <MapView.Marker
               coordinate={this.state.mapMarkerLocation}
               title={"Current Location"}
               description={"You are here"}
               pinColor="#4990E2"
-            />
+              onPress={e => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+            >
+              <View
+                style={{
+                  width: 20,
+                  height: 20,
+                  backgroundColor: colors.primary,
+                  borderRadius: 20,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center"
+                }}
+              />
+            </MapView.Marker>
           )}
-          {this.props.users.map(u => (
-            <MapView.Marker
-              key={u._id}
-              coordinate={u.coords}
-              title={u.username}
-              pinColor="#fff"
-            />
-          ))}
         </MapView>
         <View
           style={{
@@ -111,10 +191,18 @@ class PhotoMapView extends React.PureComponent {
           }}
         >
           <Button
-            onPress={() => console.log("button pressed")}
+            onPress={this.onUploadPhotoPress}
             title="Upload photo"
+            disabled={!this.state.mapMarkerLocation}
           />
         </View>
+        {selectedPlace && (
+          <PlaceOverlay
+            place={selectedPlace}
+            onHide={() => this.setState({ selectedPlaceId: null })}
+            messages={messages}
+          />
+        )}
       </>
     );
   }

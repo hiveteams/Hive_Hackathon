@@ -4,7 +4,6 @@ const setupUserRoutes = app => {
   app.post("/create-user", async (req, res, next) => {
     const { username } = req.body;
 
-    console.log("received req", username);
     if (!username) {
       res.status(500).send({ error: "Server encountered error" });
     }

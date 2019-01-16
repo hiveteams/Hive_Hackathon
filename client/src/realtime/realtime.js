@@ -3,6 +3,7 @@ import SocketIOClient from "socket.io-client";
 
 const usersCache = {};
 const placesCache = {};
+const messagesCache = {};
 const realtimeComponents = {};
 
 export function withRealtime(WrappedComponent, id) {
@@ -25,6 +26,7 @@ export function withRealtime(WrappedComponent, id) {
         <WrappedComponent
           users={Object.values(usersCache)}
           places={Object.values(placesCache)}
+          messages={Object.values(messagesCache)}
           {...this.props}
         />
       );
@@ -58,9 +60,10 @@ class Realtime {
       socket.emit("login", username);
     });
 
-    socket.on("login", ({ userId, users, places }) => {
+    socket.on("login", ({ userId, users, places, messages }) => {
       users.forEach(u => (usersCache[u._id] = u));
       places.forEach(p => (placesCache[p._id] = p));
+      messages.forEach(m => (messagesCache[m._id] = m));
       // set connection userId
       connection.userId = userId;
       // trigger onReady callback
@@ -77,6 +80,22 @@ class Realtime {
     });
 
     // listen for place updates
+    socket.on("placeUpdate", ({ place }) => {
+      // update places cache
+      placesCache[place._id] = place;
+
+      const components = Object.values(realtimeComponents);
+      components.forEach(c => c.forceUpdate());
+    });
+
+    // listen for message updates
+    socket.on("messageUpdate", ({ message }) => {
+      // update messages cache
+      messagesCache[message._id] = message;
+
+      const components = Object.values(realtimeComponents);
+      components.forEach(c => c.forceUpdate());
+    });
   }
 
   static checkForInitialization() {
@@ -91,7 +110,7 @@ class Realtime {
     }
   }
 
-  static sendMessage(method, data) {
+  static _sendMessage(method, data) {
     const msg = {
       userId: connection.userId,
       method,
@@ -107,7 +126,56 @@ class Realtime {
       coords
     };
 
-    Realtime.sendMessage("updateCoords", data);
+    Realtime._sendMessage("updateCoords", data);
+  }
+
+  static async createNewPlace(result, coords) {
+    // ImagePicker saves the taken photo to disk and returns a local URI to it
+    let localUri = result.uri;
+    let filename = localUri.split("/").pop();
+
+    // Infer the type of the image
+    let match = /\.(\w+)$/.exec(filename);
+    let type = match ? `image/${match[1]}` : `image`;
+
+    // Upload the image using the fetch and FormData APIs
+    let formData = new FormData();
+    // Assume "photo" is the name of the form field the server expects
+    formData.append("photo", { uri: localUri, name: filename, type });
+    formData.append("userId", connection.userId);
+    formData.append("coords", JSON.stringify(coords));
+
+    const res = await fetch("http://dev2.hive.com/upload", {
+      method: "POST",
+      body: formData,
+      header: {
+        "content-type": "multipart/form-data"
+      }
+    });
+    const place = await res.json();
+    return place;
+  }
+
+  static createMessage({ text, placeId }) {
+    Realtime.checkForInitialization();
+
+    const data = {
+      text,
+      placeId
+    };
+
+    Realtime._sendMessage("createMessage", data);
+  }
+
+  static updatePlaceName({ name, placeId }) {
+    Realtime.checkForInitialization();
+
+    const data = {
+      name,
+      placeId
+    };
+
+    Realtime._sendMessage("updatePlaceName", data);
   }
 }
 
