@@ -1,0 +1,17 @@
+{
+  "extends": "airbnb",
+  "plugins": ["react", "react-native"],
+  "rules": {
+    "quotes": "off",
+    "react/jsx-filename-extension": "off",
+    "import/prefer-default-export": "off",
+    "react/destructuring-assignment": "off",
+    "react-native/no-inline-styles": "error",
+    "no-underscore-dangle": "off",
+    "comma-dangle": "off",
+    "object-curly-newline": "off",
+    "arrow-parens": "off",
+    "react/forbid-prop-types": "off",
+    "no-return-assign": "off"
+  }
+}

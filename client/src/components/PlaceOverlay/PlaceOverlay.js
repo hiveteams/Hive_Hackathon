@@ -1,11 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { View, Image, Dimensions, Text, TouchableOpacity } from "react-native";
+import { View, Image, Text, TouchableOpacity, FlatList } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Button } from "../Button";
 import { TextInput } from "../TextInput";
-import { colors } from "../../helpers/style-helpers";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import Realtime from "../../realtime/realtime";
+import { Realtime } from "../../realtime";
+import { MessageItem } from "../MessageItem";
+import { styles } from "./place-overlay-styles";
 
 class PlaceOverlay extends React.PureComponent {
   constructor(props) {
@@ -13,7 +14,7 @@ class PlaceOverlay extends React.PureComponent {
 
     this.state = {
       placeName: props.place.name,
-      messageText: ""
+      messageText: "",
     };
 
     this.savePlaceName = this.savePlaceName.bind(this);
@@ -25,12 +26,16 @@ class PlaceOverlay extends React.PureComponent {
     }
   }
 
+  componentWillUnmount() {
+    this.savePlaceName();
+  }
+
   savePlaceName() {
-    const placeName = this.state.placeName;
+    const { placeName } = this.state;
     if (placeName !== this.props.place.name) {
       Realtime.updatePlaceName({
         name: placeName,
-        placeId: this.props.place._id
+        placeId: this.props.place._id,
       });
     }
   }
@@ -38,80 +43,40 @@ class PlaceOverlay extends React.PureComponent {
   render() {
     const { place } = this.props;
     return (
-      <View
-        style={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          backgroundColor: colors.white
-        }}
-      >
-        <View
-          style={{
-            width: "100%",
-            backgroundColor: colors.white,
-            display: "flex",
-            flex: 1
-          }}
-        >
+      <View style={styles.overlayWrapper}>
+        <View style={styles.overlayInner}>
           <Image
-            style={{ width: "100%", height: 300 }}
-            source={{ uri: `http://dev2.hive.com/${place.imageUrl}` }}
+            style={styles.imageBanner}
+            source={{ uri: `${Realtime.getUrl()}/${place.imageUrl}` }}
           />
-          <View>
-            <TextInput
-              style={{ fontSize: 30, fontWeight: "bold" }}
-              value={this.state.placeName}
-              onChangeText={placeName => this.setState({ placeName })}
-              onBlur={this.savePlaceName}
-            />
-          </View>
+          <TextInput
+            style={styles.titleText}
+            value={this.state.placeName}
+            onChangeText={placeName => this.setState({ placeName })}
+            onBlur={this.savePlaceName}
+            titleInput
+          />
           <KeyboardAwareScrollView
-            contentContainerStyle={{
-              paddingHorizontal: 10,
-              paddingVertical: 15,
-              display: "flex",
-              flex: 1
-            }}
+            contentContainerStyle={styles.scrollView}
             enableOnAndroid
             extraScrollHeight={20}
             keyboardShouldPersistTaps="handled"
           >
-            <View
-              style={{
-                flex: 1,
-                justifyContent: "flex-end"
-              }}
-            >
-              {this.props.messages.map(m => (
-                <Text key={m._id}>
-                  {m.sentBy}: {m.text}
-                </Text>
-              ))}
-            </View>
-            <View
-              style={{
-                marginBottom: 15,
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between"
-              }}
-            >
-              <View style={{ flex: 1 }}>
+            <FlatList
+              inverted
+              data={this.props.messages.reverse()}
+              renderItem={({ item }) => <MessageItem message={item} />}
+              keyExtractor={item => item._id}
+            />
+            <View style={styles.replyWrapper}>
+              <View style={styles.replyInner}>
                 <TextInput
                   placeholder="Message"
                   value={this.state.messageText}
                   onChangeText={messageText => this.setState({ messageText })}
                 />
               </View>
-              <View
-                style={{
-                  width: 100,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  paddingHorizontal: 5
-                }}
-              >
+              <View style={styles.sendWrapper}>
                 <Button
                   title="Send"
                   onPress={() => {
@@ -119,31 +84,19 @@ class PlaceOverlay extends React.PureComponent {
 
                     Realtime.createMessage({
                       text: this.state.messageText,
-                      placeId: place._id
+                      placeId: place._id,
                     });
                     this.setState({ messageText: "" });
                   }}
                 />
               </View>
             </View>
-            <View
-              style={{
-                marginBottom: 15
-              }}
-            >
+            <View style={styles.closeWrapper}>
               <TouchableOpacity
-                style={{ width: "100%" }}
+                style={styles.closeInner}
                 onPress={this.props.onHide}
               >
-                <Text
-                  style={{
-                    textAlign: "center",
-                    fontSize: 20,
-                    color: colors.gray
-                  }}
-                >
-                  Close
-                </Text>
+                <Text style={styles.closeText}>Close</Text>
               </TouchableOpacity>
             </View>
           </KeyboardAwareScrollView>
@@ -153,8 +106,14 @@ class PlaceOverlay extends React.PureComponent {
   }
 }
 
-PlaceOverlay.propTypes = {};
+PlaceOverlay.propTypes = {
+  place: PropTypes.object.isRequired,
+  messages: PropTypes.arrayOf(PropTypes.object).isRequired,
+  onHide: PropTypes.func,
+};
 
-PlaceOverlay.defaultProps = {};
+PlaceOverlay.defaultProps = {
+  onHide: () => {},
+};
 
 export default PlaceOverlay;

@@ -8,6 +8,6 @@ export const styles = StyleSheet.create({
     shadowColor: colors.black,
     shadowOpacity: 0.25,
     borderRadius: 2,
-    width: "100%"
-  }
+    width: "100%",
+  },
 });

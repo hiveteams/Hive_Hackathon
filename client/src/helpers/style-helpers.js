@@ -1,8 +1,16 @@
 export const colors = {
-  primary: "#4990E2",
+  primary: "rgb(73, 144, 226)",
+  opaquePrimary: "rgba(73, 144, 226, .2)",
   white: "#fff",
   black: "#000",
-  accent: "#fbc67a",
-  accentDark: "#ffb032",
-  gray: "#cccccc"
+  accent: "rgb(251, 198, 122)",
+  opaqueAccent: "rgba(251, 198, 122, .2)",
+  accentDark: "rgb(255, 176, 50)",
+  opaqueAccentDark: "rgba(255, 176, 50, .2)",
+  gray: "#cccccc",
+  lightGray: "#f7f7f7",
+  green: "rgb(0, 153, 51)",
+  opaqueGreen: "rgba(0, 153, 51, .2)",
+  red: "rgb(153, 15, 0)",
+  opaqueRed: "rgba(153, 15, 0, .1)",
 };

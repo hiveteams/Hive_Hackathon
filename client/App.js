@@ -1,9 +1,11 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import PhotoMapView from "./src/components/PhotoMapView";
+import { SecureStore } from "expo";
+import { PhotoMapView } from "./src/components/MapView";
 import { Realtime } from "./src/realtime";
 import { Login } from "./src/components/Login";
-import { SecureStore } from "expo";
+import { Loading } from "./src/components/Loading";
+
+const baseUrl = "http://dev1.hive.com";
 
 export default class App extends React.Component {
   constructor(props) {
@@ -11,7 +13,7 @@ export default class App extends React.Component {
 
     this.state = {
       ready: false,
-      loggedIn: false
+      loggedIn: false,
     };
 
     this._initialize = this._initialize.bind(this);
@@ -26,16 +28,22 @@ export default class App extends React.Component {
     const username = await SecureStore.getItemAsync("username");
 
     if (username) {
-      Realtime.init({ url: "http://dev2.hive.com", username }, () =>
-        this.setState({ ready: true, loggedIn: true })
-      );
+      Realtime.init({ url: baseUrl, username }, () => {
+        this.setState({
+          ready: true,
+          loggedIn: true,
+        });
+      });
     } else {
-      this.setState({ ready: true, loggedIn: false });
+      this.setState({
+        ready: true,
+        loggedIn: false,
+      });
     }
   }
 
   handleLogin(username) {
-    Realtime.init({ url: "http://dev2.hive.com", username }, () => {
+    Realtime.init({ url: baseUrl, username }, () => {
       SecureStore.setItemAsync("username", username);
       this.setState({ ready: true, loggedIn: true });
     });
@@ -43,13 +51,7 @@ export default class App extends React.Component {
 
   render() {
     if (!this.state.ready) {
-      return (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <Text>Loading...</Text>
-        </View>
-      );
+      return <Loading />;
     }
 
     if (!this.state.loggedIn) {
@@ -59,11 +61,3 @@ export default class App extends React.Component {
     return <PhotoMapView />;
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center"
-  }
-});

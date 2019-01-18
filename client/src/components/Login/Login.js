@@ -4,20 +4,19 @@ import { View, Text } from "react-native";
 import { Button } from "../Button";
 import { TextInput } from "../TextInput";
 import { styles } from "./login-styles";
-import Users from "../../api/Users";
 
 class Login extends React.PureComponent {
   constructor(props) {
     super(props);
 
     this.state = {
-      username: ""
+      username: "",
     };
   }
 
   render() {
     return (
-      <View style={{ flex: 1, justifyContent: "center", padding: 50 }}>
+      <View style={styles.loginContainer}>
         <View style={styles.row}>
           <Text>Username</Text>
         </View>
@@ -40,11 +39,11 @@ class Login extends React.PureComponent {
 }
 
 Login.propTypes = {
-  onLogin: PropTypes.func
+  onLogin: PropTypes.func,
 };
 
 Login.defaultProps = {
-  onLogin: () => {}
+  onLogin: () => {},
 };
 
 export default Login;

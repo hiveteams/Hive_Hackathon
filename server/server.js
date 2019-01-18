@@ -7,7 +7,6 @@ const app = express();
 const http = require("http").Server(app);
 const io = require("socket.io")(http);
 const fileUpload = require("express-fileupload");
-const { setupUserRoutes } = require("./src/users/users-routes");
 const { callMethod } = require("./src/server-methods");
 const { User } = require("./src/users/users");
 const { Place, createPlace } = require("./src/places/places");
@@ -34,8 +33,6 @@ mongoose.connect(
 
 console.log("Mongo connected");
 app.get("/", (req, res) => res.send("Hello World!"));
-
-setupUserRoutes(app);
 
 app.post("/upload", (req, res, next) => {
   const uploadFile = req.files.photo;

@@ -1,7 +1,6 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { styles } from "./button-styles";
 import { Platform, View, Button as RNButton } from "react-native";
+import { styles } from "./button-styles";
 import { colors } from "../../helpers/style-helpers";
 
 const color = Platform.OS === "android" ? colors.primary : colors.white;

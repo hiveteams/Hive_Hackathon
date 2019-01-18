@@ -8,5 +8,11 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
     width: "100%"
+  },
+  titleInput: {
+    borderColor: colors.accentDark,
+    borderBottomWidth: 2,
+    padding: 10,
+    width: "100%"
   }
 });
