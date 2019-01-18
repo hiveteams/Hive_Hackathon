@@ -1,5 +1,8 @@
-require("dotenv").config();
+// import and run dotenv config at the very top
+const dotenv = require("dotenv");
+dotenv.config();
 
+// import everything else
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
@@ -23,6 +26,7 @@ app.use(fileUpload());
 // server static files
 app.use("/public", express.static("public"));
 
+// setup mongoose
 mongoose.set("useCreateIndex", true);
 mongoose.set("useFindAndModify", false);
 // connect to database
@@ -31,9 +35,10 @@ mongoose.connect(
   { useNewUrlParser: true }
 );
 
-console.log("Mongo connected");
+// hello world route
 app.get("/", (req, res) => res.send("Hello World!"));
 
+// upload route used to upload files and create a new place
 app.post("/upload", (req, res, next) => {
   const uploadFile = req.files.photo;
   const fileName = req.files.photo.name;
@@ -80,14 +85,22 @@ io.on("connection", function(socket) {
     // find all messages
     const messages = await Message.find({}).exec();
 
+    // confirm login for the client and respond with all the latest data
     socket.emit("login", { userId, users, places, messages });
 
+    // on message, call the corresponding method
     socket.on("message", msg => {
+      // parse the incoming message
       const message = JSON.parse(msg);
+      // pull out the method and data from the client
       const { method, data } = message;
+      // call the specified method
       callMethod({ socket, userId, method, data });
     });
   });
 });
 
-http.listen(port, () => console.log(`Example app listening on port ${port}!`));
+// start server
+http.listen(port, () =>
+  console.log(`Server started listening on port ${port}!`)
+);
