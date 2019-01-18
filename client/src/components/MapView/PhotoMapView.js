@@ -11,10 +11,10 @@ import { styles } from "./map-view-styles";
 import RingMarker from "./RingMarker";
 
 const initialCoords = {
-  latitude: 40.78476453140115,
-  latitudeDelta: 0.1314237939850429,
-  longitude: -73.96169615909457,
-  longitudeDelta: 0.09279605001211166,
+  latitude: 40.80791136891071,
+  latitudeDelta: 0.013293344780677785,
+  longitude: -73.96300239488482,
+  longitudeDelta: 0.009485296905040741,
 };
 
 class PhotoMapView extends React.PureComponent {
@@ -87,7 +87,6 @@ class PhotoMapView extends React.PureComponent {
         showSpinner: false,
       });
     } catch (err) {
-      console.warn(err);
       this.setState({ showSpinner: false });
     }
   }
@@ -137,6 +136,7 @@ class PhotoMapView extends React.PureComponent {
     return (
       <>
         <MapView
+          ref={m => (this.mapView = m)}
           provider="google"
           style={styles.mapView}
           initialRegion={initialCoords}

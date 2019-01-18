@@ -16,6 +16,7 @@ class RingMarker extends React.PureComponent {
           e.preventDefault();
           e.stopPropagation();
         }}
+        anchor={{ x: 0.5, y: 0.5 }}
       >
         <View
           style={[
