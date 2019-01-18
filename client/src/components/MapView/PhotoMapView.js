@@ -6,8 +6,9 @@ import { Button } from "../Button";
 import { Realtime, withRealtime } from "../../realtime";
 import { colors } from "../../helpers/style-helpers";
 import { PlaceOverlay } from "../PlaceOverlay";
-import RingMarker from "./RingMarker";
+import { Spinner } from "../Spinner";
 import { styles } from "./map-view-styles";
+import RingMarker from "./RingMarker";
 
 const initialCoords = {
   latitude: 40.78476453140115,
@@ -24,6 +25,7 @@ class PhotoMapView extends React.PureComponent {
       errorMessage: null,
       mapMarkerLocation: null,
       selectedPlaceId: null,
+      showSpinner: false,
     };
 
     this.onMapPress = this.onMapPress.bind(this);
@@ -32,18 +34,24 @@ class PhotoMapView extends React.PureComponent {
   }
 
   componentWillMount() {
+    // check to make sure the android device is not a simulator
     if (Platform.OS === "android" && !Constants.isDevice) {
       this.setState({
         errorMessage:
           "Oops, this will not work on Sketch in an Android emulator. Try it on your device!",
       });
-    } else {
-      this.getLocationAsync();
+      return;
     }
+
+    // get this users current location
+    this.getLocationAsync();
   }
 
   onMapPress(e) {
+    // grab the coords fromt he map press native event
     const coords = e.nativeEvent.coordinate;
+
+    // update user coords and update local state
     Realtime.updateCoords(coords);
     this.setState({
       mapMarkerLocation: coords,
@@ -52,23 +60,40 @@ class PhotoMapView extends React.PureComponent {
 
   async onUploadPhotoPress() {
     const { mapMarkerLocation } = this.state;
+
+    // get camera roll permission
     const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+
+    // show error if camera roll permission was denied
     if (status !== "granted") {
       this.setState({
         errorMessage: "Permission to access camera roll was denied",
       });
+      return;
     }
 
+    // launch image picker
     const result = await ImagePicker.launchImageLibraryAsync();
     if (result.cancelled) return;
 
-    const place = await Realtime.createNewPlace(result, mapMarkerLocation);
-    this.setState({ selectedPlaceId: place._id, mapMarkerLocation: null });
+    this.setState({ showSpinner: true });
+
+    try {
+      // create a new place using the image picker result
+      const place = await Realtime.createNewPlace(result, mapMarkerLocation);
+      this.setState({
+        selectedPlaceId: place._id,
+        mapMarkerLocation: null,
+        showSpinner: false,
+      });
+    } catch (err) {
+      console.warn(err);
+      this.setState({ showSpinner: false });
+    }
   }
 
   async getLocationAsync() {
-    // Don't be creepy, ask for permissions
-    // get location permissions
+    // Don't be creepy, ask for permission
     const { status } = await Permissions.askAsync(Permissions.LOCATION);
     if (status !== "granted") {
       this.setState({
@@ -83,6 +108,7 @@ class PhotoMapView extends React.PureComponent {
       longitude: location.coords.longitude,
     };
 
+    // update state with the current location
     this.setState(prevState => ({
       region: {
         ...prevState.region,
@@ -91,6 +117,7 @@ class PhotoMapView extends React.PureComponent {
       mapMarkerLocation: coords,
     }));
 
+    // realtime coordinate updates so other users see you move around
     Realtime.updateCoords(coords);
   }
 
@@ -165,6 +192,7 @@ class PhotoMapView extends React.PureComponent {
             messages={messages}
           />
         )}
+        {this.state.showSpinner && <Spinner />}
       </>
     );
   }

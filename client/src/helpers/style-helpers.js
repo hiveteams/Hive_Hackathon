@@ -3,6 +3,7 @@ export const colors = {
   opaquePrimary: "rgba(73, 144, 226, .2)",
   white: "#fff",
   black: "#000",
+  opaqueBlack: "rgba(0, 0, 0, .2)",
   accent: "rgb(251, 198, 122)",
   opaqueAccent: "rgba(251, 198, 122, .2)",
   accentDark: "rgb(255, 176, 50)",
