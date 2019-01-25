@@ -166,7 +166,10 @@ class PhotoMapView extends React.PureComponent {
                 e.stopPropagation();
                 this.setState({ selectedPlaceId: p._id });
               }}
-            />
+            >
+              {/* used to hide callout on ios */}
+              <MapView.Callout tooltip />
+            </MapView.Marker>
           ))}
           {this.state.mapMarkerLocation && (
             <RingMarker
