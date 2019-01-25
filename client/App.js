@@ -1,63 +1,51 @@
 import React from "react";
-import { SecureStore } from "expo";
-import { PhotoMapView } from "./src/components/MapView";
-import { Realtime } from "./src/realtime";
+import { View, Text, StyleSheet } from "react-native";
 import { Login } from "./src/components/Login";
-import { Loading } from "./src/components/Loading";
+import { Realtime } from "./src/realtime";
 
-const baseUrl = "http://dev1.hive.com";
+export const styles = StyleSheet.create({
+  container: {
+    display: "flex",
+    justifyContent: "center",
+    flex: 1,
+    padding: 20,
+  },
+});
 
 export default class App extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      ready: false,
       loggedIn: false,
     };
 
-    this._initialize = this._initialize.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
   }
 
-  componentWillMount() {
-    this._initialize();
-  }
-
-  async _initialize() {
-    const username = await SecureStore.getItemAsync("username");
-
-    if (username) {
-      Realtime.init({ url: baseUrl, username }, () => {
-        this.setState({
-          ready: true,
-          loggedIn: true,
-        });
-      });
-    } else {
-      this.setState({
-        ready: true,
-        loggedIn: false,
-      });
-    }
-  }
-
   handleLogin(username) {
+    console.log("login clicked", username);
+
+    // ignore if login is pressed without any username
+    if (!username) return;
+
+    // handle login logic by using our realtime helper to login through web socket
+    const baseUrl = "http://dev1.hive.com";
     Realtime.init({ url: baseUrl, username }, () => {
-      SecureStore.setItemAsync("username", username);
-      this.setState({ ready: true, loggedIn: true });
+      this.setState({ loggedIn: true });
     });
   }
 
   render() {
-    if (!this.state.ready) {
-      return <Loading />;
-    }
-
     if (!this.state.loggedIn) {
       return <Login onLogin={this.handleLogin} />;
     }
 
-    return <PhotoMapView />;
+    return (
+      <View style={styles.container}>
+        <Text>Welcome {Realtime.getUsername()}</Text>
+        <Text>You are logged in!</Text>
+      </View>
+    );
   }
 }
