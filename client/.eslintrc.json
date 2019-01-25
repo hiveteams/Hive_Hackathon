@@ -15,6 +15,7 @@
     "no-return-assign": "off",
     "arrow-body-style": "off",
     "react/jsx-one-expression-per-line": "off",
-    "class-methods-use-this": "off"
+    "class-methods-use-this": "off",
+    "implicit-arrow-linebreak": "off"
   }
 }

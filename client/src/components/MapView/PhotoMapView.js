@@ -213,4 +213,4 @@ PhotoMapView.defaultProps = {
   users: [],
 };
 
-export default withRealtime(PhotoMapView, "photoView");
+export default withRealtime(PhotoMapView);
