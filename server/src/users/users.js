@@ -16,6 +16,8 @@ const User = mongoose.model("User", {
  * @param {String} data.username - username
  */
 const createUser = async ({ userId, socket }, { username }) => {
+  if (!username) throw Error("invalid username");
+
   const existingUser = await User.findOne({ username }).exec();
   // return existing user if one exists
   if (existingUser) {

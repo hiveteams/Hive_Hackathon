@@ -70,6 +70,11 @@ io.on("connection", function(socket) {
   // on login, create / log user in and
   // start listening to socket messages
   socket.on("login", async username => {
+    if (!username) {
+      socket.disconnect();
+      return;
+    }
+
     const user = await callMethod({
       socket,
       method: "createUser",
