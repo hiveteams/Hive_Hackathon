@@ -2,12 +2,22 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Button } from "./src/components/Button";
 
+const rowStyle = {
+  flex: 1,
+};
+
 export const styles = StyleSheet.create({
   container: {
     display: "flex",
-    justifyContent: "center",
     flex: 1,
-    padding: 20,
+  },
+  blue: {
+    ...rowStyle,
+    backgroundColor: "blue",
+  },
+  cyan: {
+    ...rowStyle,
+    backgroundColor: "cyan",
   },
 });
 
