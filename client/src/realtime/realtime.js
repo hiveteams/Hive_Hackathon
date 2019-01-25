@@ -184,6 +184,12 @@ class Realtime {
 
     return connection.url;
   }
+
+  static getUsername() {
+    Realtime.checkForInitialization();
+
+    return connection.username;
+  }
 }
 
 export default Realtime;
