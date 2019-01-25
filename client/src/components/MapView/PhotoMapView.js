@@ -133,6 +133,9 @@ class PhotoMapView extends React.PureComponent {
       );
     }
 
+    // filter out any users that do not have locations set yet
+    const usersWithCoords = this.props.users.filter(u => !!u.coords);
+
     return (
       <>
         <MapView
@@ -143,7 +146,7 @@ class PhotoMapView extends React.PureComponent {
           onPress={this.onMapPress}
           onPoiClick={this.onMapPress}
         >
-          {this.props.users.map(u => (
+          {usersWithCoords.map(u => (
             <RingMarker
               key={u._id}
               title={u.username}
