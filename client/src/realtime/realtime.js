@@ -48,6 +48,11 @@ class Realtime {
       return;
     }
 
+    if (!username) {
+      console.warn("Realtime initialization error: Invalid username");
+      return;
+    }
+
     // create new socket io client
     const socket = SocketIOClient(url);
     connection.username = username;
