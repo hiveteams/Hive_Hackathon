@@ -7,15 +7,27 @@ const placesCache = {};
 const messagesCache = {};
 const realtimeComponents = {};
 
-export function withRealtime(WrappedComponent, id) {
+const getId = () =>
+  Math.random()
+    .toString(36)
+    .substring(2, 15);
+
+export function withRealtime(WrappedComponent) {
   return class extends React.Component {
+    constructor(props) {
+      super(props);
+
+      // generate random id for this component
+      this.id = getId();
+    }
+
     componentDidMount() {
       // keep a ref to this realtime compnent
-      realtimeComponents[id] = this;
+      realtimeComponents[this.id] = this;
     }
 
     componentWillUnmount() {
-      delete realtimeComponents[id];
+      delete realtimeComponents[this.id];
     }
 
     render() {
