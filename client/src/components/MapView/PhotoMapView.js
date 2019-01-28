@@ -139,7 +139,6 @@ class PhotoMapView extends React.PureComponent {
     return (
       <>
         <MapView
-          ref={m => (this.mapView = m)}
           style={styles.mapView}
           initialRegion={initialCoords}
           onPress={this.onMapPress}
