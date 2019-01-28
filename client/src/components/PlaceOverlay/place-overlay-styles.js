@@ -44,6 +44,9 @@ export const styles = StyleSheet.create({
   },
   closeWrapper: {
     marginBottom: 15,
+    position: "absolute",
+    bottom: 30,
+    width: "100%",
   },
   closeInner: {
     width: "100%",

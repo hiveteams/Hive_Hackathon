@@ -56,50 +56,14 @@ class PlaceOverlay extends React.PureComponent {
             onBlur={this.savePlaceName}
             titleInput
           />
-          <KeyboardAwareScrollView
-            contentContainerStyle={styles.scrollView}
-            enableOnAndroid
-            extraScrollHeight={20}
-            keyboardShouldPersistTaps="handled"
-          >
-            <FlatList
-              inverted
-              data={this.props.messages.reverse()}
-              renderItem={({ item }) => <MessageItem message={item} />}
-              keyExtractor={item => item._id}
-            />
-            <View style={styles.replyWrapper}>
-              <View style={styles.replyInner}>
-                <TextInput
-                  placeholder="Message"
-                  value={this.state.messageText}
-                  onChangeText={messageText => this.setState({ messageText })}
-                />
-              </View>
-              <View style={styles.sendWrapper}>
-                <Button
-                  title="Send"
-                  onPress={() => {
-                    if (!this.state.messageText) return;
-
-                    Realtime.createMessage({
-                      text: this.state.messageText,
-                      placeId: place._id,
-                    });
-                    this.setState({ messageText: "" });
-                  }}
-                />
-              </View>
-            </View>
-            <View style={styles.closeWrapper}>
-              <TouchableOpacity
-                style={styles.closeInner}
-                onPress={this.props.onHide}
-              >
-                <Text style={styles.closeText}>Close</Text>
-              </TouchableOpacity>
-            </View>
-          </KeyboardAwareScrollView>
+          <View style={styles.closeWrapper}>
+            <TouchableOpacity
+              style={styles.closeInner}
+              onPress={this.props.onHide}
+            >
+              <Text style={styles.closeText}>Close</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     );
@@ -108,7 +72,6 @@ class PlaceOverlay extends React.PureComponent {
 
 PlaceOverlay.propTypes = {
   place: PropTypes.object.isRequired,
-  messages: PropTypes.arrayOf(PropTypes.object).isRequired,
   onHide: PropTypes.func,
 };
 
