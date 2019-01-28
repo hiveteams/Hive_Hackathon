@@ -40,18 +40,26 @@ app.get("/", (req, res) => res.send("Hello World!"));
 
 // upload route used to upload files and create a new place
 app.post("/upload", (req, res, next) => {
+  // grab the file being uploaded
   const uploadFile = req.files.photo;
+  // get the fileName
   const fileName = req.files.photo.name;
+  // get the userId for the upload
   const { userId } = req.body;
+  // parse out the coordinates that were sent as a JSON string
   const coords = JSON.parse(req.body.coords);
+  // generate a new randomId for this place
   var randomId = mongoose.Types.ObjectId();
+  // use the randomId to ensure no collisions on the fileName
   const imageUrl = `public/files/${randomId}_${fileName}`;
 
+  // upload the file
   uploadFile.mv(`${__dirname}/${imageUrl}`, async err => {
     if (err) {
       return res.status(500).send(err);
     }
 
+    // use 'createPlace' method to create a new place
     const place = await createPlace(
       { userId, socket: io },
       {
@@ -60,6 +68,7 @@ app.post("/upload", (req, res, next) => {
         imageUrl
       }
     );
+    // publish the update to all sockets
     io.emit("placeUpdate", { place });
     res.send(place);
   });
