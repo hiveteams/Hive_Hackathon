@@ -121,13 +121,9 @@ class PhotoMapView extends React.PureComponent {
   }
 
   render() {
-    let messages = [];
     let selectedPlace = null;
 
     if (this.state.selectedPlaceId) {
-      messages = this.props.messages
-        .filter(m => m.placeId === this.state.selectedPlaceId)
-        .sort((a, b) => a.createdAt - b.createdAt);
       selectedPlace = this.props.places.find(
         p => p._id === this.state.selectedPlaceId
       );
@@ -194,7 +190,6 @@ class PhotoMapView extends React.PureComponent {
           <PlaceOverlay
             place={selectedPlace}
             onHide={() => this.setState({ selectedPlaceId: null })}
-            messages={messages}
           />
         )}
         {this.state.showSpinner && <Spinner />}
@@ -204,13 +199,11 @@ class PhotoMapView extends React.PureComponent {
 }
 
 PhotoMapView.propTypes = {
-  messages: PropTypes.arrayOf(PropTypes.object),
   places: PropTypes.arrayOf(PropTypes.object),
   users: PropTypes.arrayOf(PropTypes.object),
 };
 
 PhotoMapView.defaultProps = {
-  messages: [],
   places: [],
   users: [],
 };
