@@ -43,7 +43,9 @@ class PlaceOverlay extends React.PureComponent {
 
   sendButtonPressed() {
     // TODO: add send button pressed logic using Realtime helper
-    console.log("send button pressed");
+    // Hint: you will need to call Realtime.createMessage
+    // You will also need to clear out the messageText after sending the message to the server
+    console.log("send button pressed", this.state.messageText);
   }
 
   render() {
@@ -68,8 +70,12 @@ class PlaceOverlay extends React.PureComponent {
             extraScrollHeight={20}
             keyboardShouldPersistTaps="handled"
           >
-            {/* TODO: render messages using an 'inverted' FlatList and the MessageItem component */}
-            {/* Hint: might want to check out the docs here: https://facebook.github.io/react-native/docs/flatlist */}
+            <FlatList
+              inverted
+              data={this.props.messages.reverse()}
+              renderItem={({ item }) => <MessageItem message={item} />}
+              keyExtractor={item => item._id}
+            />
 
             <View style={styles.replyWrapper}>
               <View style={styles.replyInner}>
