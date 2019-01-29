@@ -14,6 +14,7 @@ class PlaceOverlay extends React.PureComponent {
     };
 
     this.savePlaceName = this.savePlaceName.bind(this);
+    this.sendButtonPressed = this.sendButtonPressed.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -28,6 +29,18 @@ class PlaceOverlay extends React.PureComponent {
 
   savePlaceName() {
     // TODO: write logic for savePlaceName using the Realtime helper
+  }
+
+  sendButtonPressed() {
+    const { place } = this.props;
+
+    if (!this.state.messageText) return;
+
+    Realtime.createMessage({
+      text: this.state.messageText,
+      placeId: place._id,
+    });
+    this.setState({ messageText: "" });
   }
 
   render() {
