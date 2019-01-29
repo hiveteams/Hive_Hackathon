@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "realtime-photos",
+    "name": "hive-hackathon",
     "description": "This project is really great.",
-    "slug": "realtime-photos",
+    "slug": "hive-hackathon",
     "privacy": "public",
     "sdkVersion": "31.0.0",
     "platforms": ["ios", "android"],
@@ -23,7 +23,9 @@
     },
     "android": {
       "config": {
-        "googleMaps": { "apiKey": "api_key_here" }
+        "googleMaps": {
+          "apiKey": "api_key_here"
+        }
       }
     }
   }
