@@ -1,7 +1,6 @@
 import React from "react";
 import { Platform, View, Text } from "react-native";
 import { Constants, Location, Permissions, MapView } from "expo";
-import { Realtime } from "../../realtime";
 import { styles } from "./map-view-styles";
 import RingMarker from "./RingMarker";
 
@@ -43,8 +42,7 @@ class PhotoMapView extends React.PureComponent {
     // grab the coords fromt he map press native event
     const coords = e.nativeEvent.coordinate;
 
-    // update user coords and update local state
-    Realtime.updateCoords(coords);
+    // update local state
     this.setState({
       currentLocation: coords,
     });
@@ -70,9 +68,6 @@ class PhotoMapView extends React.PureComponent {
     this.setState({
       currentLocation: coords,
     });
-
-    // realtime coordinate updates so other users see you move around
-    Realtime.updateCoords(coords);
   }
 
   render() {
