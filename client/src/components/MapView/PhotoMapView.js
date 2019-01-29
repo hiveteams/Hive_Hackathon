@@ -48,9 +48,8 @@ class PhotoMapView extends React.PureComponent {
     // grab the coords fromt he map press native event
     const coords = e.nativeEvent.coordinate;
 
-    // TODO: use realtime helper to send coords to server
-
-    // update local state
+    // update user coords and update local state
+    Realtime.updateCoords(coords);
     this.setState({
       currentLocation: coords,
     });
@@ -77,7 +76,8 @@ class PhotoMapView extends React.PureComponent {
       currentLocation: coords,
     });
 
-    // TODO: use realtime helper to send coords to server
+    // realtime coordinate updates so other users see you move around
+    Realtime.updateCoords(coords);
   }
 
   render() {
@@ -92,8 +92,15 @@ class PhotoMapView extends React.PureComponent {
           onPress={this.onMapPress}
           onPoiClick={this.onMapPress}
         >
-          {/* TODO: render other users with coords using the RingMarker component */}
-
+          {usersWithCoords.map(u => (
+            <RingMarker
+              key={u._id}
+              title={u.username}
+              coords={u.coords}
+              color={colors.green}
+              backgroundColor={colors.opaqueGreen}
+            />
+          ))}
           {this.state.currentLocation && (
             <RingMarker
               title="Current Location"
