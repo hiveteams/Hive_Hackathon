@@ -117,8 +117,13 @@ class PhotoMapView extends React.PureComponent {
   }
 
   render() {
-    // TODO: use selectedPlaceId to get the currently selected place
-    console.log("selectedPlaceId", this.state.selectedPlaceId);
+    let selectedPlace = null;
+
+    if (this.state.selectedPlaceId) {
+      selectedPlace = this.props.places.find(
+        p => p._id === this.state.selectedPlaceId
+      );
+    }
 
     // filter out any users that do not have locations set yet
     const usersWithCoords = this.props.users.filter(u => !!u.coords);
@@ -177,7 +182,12 @@ class PhotoMapView extends React.PureComponent {
           </View>
         )}
 
-        {/* TODO: render PlaceOverlay */}
+        {selectedPlace && (
+          <PlaceOverlay
+            place={selectedPlace}
+            onHide={() => this.setState({ selectedPlaceId: null })}
+          />
+        )}
 
         {this.state.showSpinner && <Spinner />}
       </>
