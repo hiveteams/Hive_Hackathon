@@ -33,7 +33,11 @@ class Login extends React.PureComponent {
           </View>
           <View style={styles.row}>
             <TextInput
-              onChangeText={username => this.setState({ username })}
+              onChangeText={username => {
+                console.log(username);
+                // update username
+                this.setState({ username });
+              }}
               value={this.state.username}
               placeholder="Luke Skywalker"
             />
@@ -41,7 +45,10 @@ class Login extends React.PureComponent {
           <View style={styles.row}>
             <Button
               title="Login"
-              onPress={() => this.props.onLogin(this.state.username)}
+              onPress={() => {
+                // TODO: call login function that has been passed into this component as a prop
+                console.log("Login button pressed");
+              }}
             />
           </View>
 
