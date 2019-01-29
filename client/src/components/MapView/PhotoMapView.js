@@ -89,13 +89,7 @@ class PhotoMapView extends React.PureComponent {
           onPress={this.onMapPress}
           onPoiClick={this.onMapPress}
         >
-          {this.state.mapMarkerLocation && (
-            <RingMarker
-              title="Current Location"
-              description="You are here"
-              coords={this.state.mapMarkerLocation}
-            />
-          )}
+          {/* Use the RingMarker component to render the current location */}
         </MapView>
         {this.state.errorMessage && (
           <View style={styles.errorMessageWrapper}>
