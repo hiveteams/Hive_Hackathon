@@ -42,15 +42,8 @@ class PlaceOverlay extends React.PureComponent {
   }
 
   sendButtonPressed() {
-    const { place } = this.props;
-
-    if (!this.state.messageText) return;
-
-    Realtime.createMessage({
-      text: this.state.messageText,
-      placeId: place._id,
-    });
-    this.setState({ messageText: "" });
+    // TODO: add send button pressed logic using Realtime helper
+    console.log("send button pressed");
   }
 
   render() {
