@@ -41,6 +41,18 @@ class Realtime {
     });
   }
 
+  static checkForInitialization() {
+    if (!connection.socket) {
+      throw new Error(
+        "Realtime socket not initialized, please call Realtime.init before using socket"
+      );
+    } else if (!connection.userId) {
+      throw new Error(
+        "Realtime socket not ready, please wait for onReady callback before using socket"
+      );
+    }
+  }
+
   static getUsername() {
     Realtime.checkForInitialization();
 
