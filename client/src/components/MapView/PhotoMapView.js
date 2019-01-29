@@ -117,13 +117,9 @@ class PhotoMapView extends React.PureComponent {
   }
 
   render() {
-    let selectedPlace = null;
-
-    if (this.state.selectedPlaceId) {
-      selectedPlace = this.props.places.find(
-        p => p._id === this.state.selectedPlaceId
-      );
-    }
+    // TODO: iterate over the list of places passed in by our realtime helper
+    // to find the currently selected place
+    console.log("selectedPlaceId", this.state.selectedPlaceId);
 
     // filter out any users that do not have locations set yet
     const usersWithCoords = this.props.users.filter(u => !!u.coords);
@@ -182,12 +178,17 @@ class PhotoMapView extends React.PureComponent {
           </View>
         )}
 
-        {selectedPlace && (
-          <PlaceOverlay
-            place={selectedPlace}
-            onHide={() => this.setState({ selectedPlaceId: null })}
-          />
-        )}
+        {/*
+          TODO: render PlaceOverlay
+          Hint: you will need to pass in two props, place and onHide
+          - place should be the object corresponding to selectedPlaceId
+          - onHide should just trigger a state update that unsets selectedPlaceId
+
+          You will also need to use the following syntax to only render the PlaceOverlay
+          if there is a location currently selected
+
+          {!!selectedPlace && <Component props />}
+         */}
 
         {this.state.showSpinner && <Spinner />}
       </>
