@@ -62,7 +62,7 @@ class PlaceOverlay extends React.PureComponent {
             extraScrollHeight={20}
             keyboardShouldPersistTaps="handled"
           >
-            {/* TODO: render messages using an 'inverted' FlatList */}
+            {/* TODO: render messages using an 'inverted' FlatList and the MessageItem component */}
             {/* Hint: might want to check out the docs here: https://facebook.github.io/react-native/docs/flatlist */}
 
             <View style={styles.replyWrapper}>
