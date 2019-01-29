@@ -15,6 +15,13 @@ class Login extends React.PureComponent {
     this.state = {
       username: "",
     };
+
+    this.onLoginPressed = this.onLoginPressed.bind(this);
+  }
+
+  onLoginPressed() {
+    // TODO: call login function that has been passed into this component as a prop
+    console.log("Login button pressed");
   }
 
   render() {
@@ -43,13 +50,7 @@ class Login extends React.PureComponent {
             />
           </View>
           <View style={styles.row}>
-            <Button
-              title="Login"
-              onPress={() => {
-                // TODO: call login function that has been passed into this component as a prop
-                console.log("Login button pressed");
-              }}
-            />
+            <Button title="Login" onPress={() => this.onLoginPressed()} />
           </View>
 
           <View style={styles.row}>
