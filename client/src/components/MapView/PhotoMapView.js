@@ -18,7 +18,7 @@ class PhotoMapView extends React.PureComponent {
 
     this.state = {
       errorMessage: null,
-      mapMarkerLocation: null,
+      currentLocation: null,
     };
 
     this.onMapPress = this.onMapPress.bind(this);
@@ -46,7 +46,7 @@ class PhotoMapView extends React.PureComponent {
     // update user coords and update local state
     Realtime.updateCoords(coords);
     this.setState({
-      mapMarkerLocation: coords,
+      currentLocation: coords,
     });
   }
 
@@ -67,13 +67,9 @@ class PhotoMapView extends React.PureComponent {
     };
 
     // update state with the current location
-    this.setState(prevState => ({
-      region: {
-        ...prevState.region,
-        ...coords,
-      },
-      mapMarkerLocation: coords,
-    }));
+    this.setState({
+      currentLocation: coords,
+    });
 
     // realtime coordinate updates so other users see you move around
     Realtime.updateCoords(coords);
@@ -83,7 +79,6 @@ class PhotoMapView extends React.PureComponent {
     return (
       <>
         <MapView
-          ref={m => (this.mapView = m)}
           style={styles.mapView}
           initialRegion={initialCoords}
           onPress={this.onMapPress}
