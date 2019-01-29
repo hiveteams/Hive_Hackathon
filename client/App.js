@@ -32,7 +32,9 @@ export default class App extends React.Component {
     // handle login logic by using our realtime helper to login through web socket
     const baseUrl = "http://dev1.hive.com";
 
-    // TODO: Initialize Realtime helper using the init function, and update the 'loggedIn' state
+    // TODO: Initialize Realtime helper using the init function
+    // Hint: Your code should look something like this. You will need to update the loggedIn state in the onReady callback
+    // Realtime.init(config, callback)
   }
 
   render() {
