@@ -48,8 +48,7 @@ class PhotoMapView extends React.PureComponent {
     // grab the coords fromt he map press native event
     const coords = e.nativeEvent.coordinate;
 
-    // TODO: use realtime helper to send coords to server
-
+    Realtime.updateCoords(coords);
     // update local state
     this.setState({
       currentLocation: coords,
@@ -77,10 +76,11 @@ class PhotoMapView extends React.PureComponent {
       currentLocation: coords,
     });
 
-    // TODO: use realtime helper to send coords to server
+    Realtime.updateCoords(coords);
   }
 
   render() {
+    console.log(this.props.users);
     // filter out any users that do not have locations set yet
     const usersWithCoords = this.props.users.filter(u => !!u.coords);
 
@@ -92,7 +92,21 @@ class PhotoMapView extends React.PureComponent {
           onPress={this.onMapPress}
           onPoiClick={this.onMapPress}
         >
-          {/* TODO: render other users with coords using the RingMarker component */}
+          {/*
+            TODO: render other users with coords using the RingMarker component
+
+            hint you will want to make use of this logic to render items in an array:
+
+            usersWithCoords.map(user => {
+              return <Component key={key} (other props here) />
+            });
+
+            // This will return a list of components which will then be rendered to the UI
+            // It is important to have a unique key because this will tell react when to create or reuse
+            // an existing component
+
+            RingMarker will need only two props, a title, and coords
+          */}
 
           {this.state.currentLocation && (
             <RingMarker
