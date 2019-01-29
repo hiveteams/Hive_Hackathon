@@ -22,7 +22,7 @@ class PhotoMapView extends React.PureComponent {
 
     this.state = {
       errorMessage: null,
-      mapMarkerLocation: null,
+      currentLocation: null,
       showSpinner: false,
     };
 
@@ -51,7 +51,7 @@ class PhotoMapView extends React.PureComponent {
     // update user coords and update local state
     Realtime.updateCoords(coords);
     this.setState({
-      mapMarkerLocation: coords,
+      currentLocation: coords,
     });
   }
 
@@ -72,13 +72,9 @@ class PhotoMapView extends React.PureComponent {
     };
 
     // update state with the current location
-    this.setState(prevState => ({
-      region: {
-        ...prevState.region,
-        ...coords,
-      },
-      mapMarkerLocation: coords,
-    }));
+    this.setState({
+      currentLocation: coords,
+    });
 
     // realtime coordinate updates so other users see you move around
     Realtime.updateCoords(coords);
@@ -91,7 +87,6 @@ class PhotoMapView extends React.PureComponent {
     return (
       <>
         <MapView
-          ref={m => (this.mapView = m)}
           style={styles.mapView}
           initialRegion={initialCoords}
           onPress={this.onMapPress}
@@ -106,11 +101,11 @@ class PhotoMapView extends React.PureComponent {
               backgroundColor={colors.opaqueGreen}
             />
           ))}
-          {this.state.mapMarkerLocation && (
+          {this.state.currentLocation && (
             <RingMarker
               title="Current Location"
               description="You are here"
-              coords={this.state.mapMarkerLocation}
+              coords={this.state.currentLocation}
             />
           )}
         </MapView>
