@@ -23,7 +23,7 @@ class PhotoMapView extends React.PureComponent {
 
     this.state = {
       errorMessage: null,
-      mapMarkerLocation: null,
+      currentLocation: null,
       selectedPlaceId: null,
       showSpinner: false,
     };
@@ -54,12 +54,12 @@ class PhotoMapView extends React.PureComponent {
     // update user coords and update local state
     Realtime.updateCoords(coords);
     this.setState({
-      mapMarkerLocation: coords,
+      currentLocation: coords,
     });
   }
 
   async onUploadPhotoPress() {
-    const { mapMarkerLocation } = this.state;
+    const { currentLocation } = this.state;
 
     // get camera roll permission
     const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
@@ -80,10 +80,10 @@ class PhotoMapView extends React.PureComponent {
 
     try {
       // create a new place using the image picker result
-      const place = await Realtime.createNewPlace(result, mapMarkerLocation);
+      const place = await Realtime.createNewPlace(result, currentLocation);
       this.setState({
         selectedPlaceId: place._id,
-        mapMarkerLocation: null,
+        currentLocation: null,
         showSpinner: false,
       });
     } catch (err) {
@@ -108,13 +108,9 @@ class PhotoMapView extends React.PureComponent {
     };
 
     // update state with the current location
-    this.setState(prevState => ({
-      region: {
-        ...prevState.region,
-        ...coords,
-      },
-      mapMarkerLocation: coords,
-    }));
+    this.setState({
+      currentLocation: coords,
+    });
 
     // realtime coordinate updates so other users see you move around
     Realtime.updateCoords(coords);
@@ -135,7 +131,6 @@ class PhotoMapView extends React.PureComponent {
     return (
       <>
         <MapView
-          ref={m => (this.mapView = m)}
           style={styles.mapView}
           initialRegion={initialCoords}
           onPress={this.onMapPress}
@@ -166,11 +161,11 @@ class PhotoMapView extends React.PureComponent {
               <MapView.Callout tooltip />
             </MapView.Marker>
           ))}
-          {this.state.mapMarkerLocation && (
+          {this.state.currentLocation && (
             <RingMarker
               title="Current Location"
               description="You are here"
-              coords={this.state.mapMarkerLocation}
+              coords={this.state.currentLocation}
             />
           )}
         </MapView>
@@ -178,7 +173,7 @@ class PhotoMapView extends React.PureComponent {
           <Button
             onPress={this.onUploadPhotoPress}
             title="Upload photo"
-            disabled={!this.state.mapMarkerLocation}
+            disabled={!this.state.currentLocation}
           />
         </View>
         {this.state.errorMessage && (
