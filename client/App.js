@@ -50,15 +50,14 @@ export default class App extends React.Component {
   }
 
   render() {
-    // TODO: write the render logic
+    if (!this.state.ready) {
+      return <Loading />;
+    }
 
-    // if App is not ready, render Loading component
+    if (!this.state.loggedIn) {
+      return <Login onLogin={this.handleLogin} />;
+    }
 
-    // if App is ready but the user is not logged in, render Login component
-    // don't forget to pass in any necessary props!
-
-    // If App is ready and user is logged in, render the PhotoMapView component
-
-    return <Loading />;
+    return <PhotoMapView />;
   }
 }
