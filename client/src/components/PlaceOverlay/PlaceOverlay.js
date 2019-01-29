@@ -27,13 +27,7 @@ class PlaceOverlay extends React.PureComponent {
   }
 
   savePlaceName() {
-    const { placeName } = this.state;
-    if (placeName !== this.props.place.name) {
-      Realtime.updatePlaceName({
-        name: placeName,
-        placeId: this.props.place._id,
-      });
-    }
+    // TODO: write logic for savePlaceName using the Realtime helper
   }
 
   render() {
